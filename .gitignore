@@ -2,3 +2,5 @@
 /data/*/
 *.pdf
 *.pth
+*.pt
+*.zip
