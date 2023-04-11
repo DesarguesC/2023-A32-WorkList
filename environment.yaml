@@ -1,0 +1,14 @@
+name: rectification
+channes:
+  - pytorch
+  - defaults
+dependencies:
+  - python=3.8.5
+  - pip=20.3
+  - cudatoolkit=11.3
+  - numpy=1.19.2
+  - pip:
+    - pandas>=1.3.5
+    - matplotlib>=3.5.3
+    - tqdm>=4.64.1
+    - scipy>=1.7.3
