@@ -67,6 +67,13 @@ def get_base_argument_parser() -> argparse.ArgumentParser:
         help='the length of dataset and must be greater than 5'
     )
 
+    parser.add_argument(
+        '--few_shot_path',
+        type=str,
+        default='./data/few_shot_sample.xlsx',
+        help='the path that the few-shot sequence data is placed'
+    )
+    
     opt = parser.parse_args()
     return opt
 

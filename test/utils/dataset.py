@@ -1,12 +1,17 @@
 import numpy as np
 import pandas as pd
 from utils.util import df2arr, ArrNorm
+import torch
+
+def load_array(data_arrays, batch_size, is_train=True):
+    dataset = torch.utils.data.TensorDataset(*data_arrays)
+    return torch.utils.ata.DataLoader(dataset, batch_size, shuffle=is_train)
 
 
 
-def GetDataset(opt):
+def GetDataset(opt, few_shot=False):
     print('Data loading status: Start.')
-    path = opt.data_path.lower()
+    path = opt.data_path if not few_shot else opt.few_shot_path
     if path.endswith('xlsx'):
         try:
             read_data = pd.read_excel(path, header=None)
