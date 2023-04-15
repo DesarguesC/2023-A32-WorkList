@@ -34,6 +34,7 @@ def find_best_scale(model: Module, opt, data_iter):
     R_plt_list = []
     scale_list = []
     scale_plt_list = []
+    opt.base_scope = -opt.base_scope if opt.base_scope<0 else opt.base_scope
     for idx in range(5):
         print('Finding: [%d|%d]' % (idx, 5))
         r = .0
