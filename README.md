@@ -35,6 +35,7 @@ in order to use our project.
 
 As you clone the program, turn to folder 'test' and activate your virtual environment(if you have launched a new virtual environment for our program)
 ```bat
+rectification
 cd test
 ```
 running our main code
@@ -105,11 +106,59 @@ conda env create -f environment.yaml
 
 ### 项目运行
 
-在终端中打开我们的项目文件夹，切换进入test文件夹
+当clone了我们的项目后，在终端中打开我们的项目文件夹，切换进入test文件夹并激活虚拟环境（如果有为我们的项目申请出一个虚拟环境的话
 ```bat
+conda activate rectification
 cd test
+```
+运行我们的主程序代码
+```bat
+python test.py
+```
+此时使用默认值dfg-scale=1.0以及默认数据集地址data/A32.xlsx. test.py中所有的支持的参数值如下表所示（输入python test.py --help）
+```bat
+usage: test.py [-h] [--mini_station_num MINI_STATION_NUM] [--data_path DATA_PATH] [--pt_path PT_PATH] [--dfg_scale DFG_SCALE]
+               [--norm {standard,max-min}] [--few_shot_mode FEW_SHOT_MODE] [--few_shot_length FEW_SHOT_LENGTH]
+               [--few_shot_path FEW_SHOT_PATH] [--save_find_fig SAVE_FIND_FIG] [--base_scope BASE_SCOPE]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --mini_station_num MINI_STATION_NUM
+                        how many tiny stations are on the dataset
+  --data_path DATA_PATH
+                        the path of your dataset
+  --pt_path PT_PATH     the path of your model weights
+  --dfg_scale DFG_SCALE
+                        district-free guidance scale as we dedcribed
+  --norm {standard,max-min}
+                        how to normalize the input data
+  --few_shot_mode FEW_SHOT_MODE
+                        to use zero shot mode
+  --few_shot_length FEW_SHOT_LENGTH
+                        the length of dataset and must be greater than 5
+  --few_shot_path FEW_SHOT_PATH
+                        the path that the few-shot sequence data is placed
+  --save_find_fig SAVE_FIND_FIG
+                        whether to save figure when searching the best scale
+  --base_scope BASE_SCOPE
+                        use the scope when find the best dfg-scale
+```
+
+注意：当有使用few-shot数据集作为输入时，记得设置--few_shot_mode=True否则模型无法读取你的few-shot数据集。
+
+参数解释：
+```bat
+mini_station_num：微站数量
+data_path：测试数据地址(xlsx/csv格式)
+pt_path：权重文件
+dfg_scale：加权残差连接使用的scale值
+norm：标准化方法（'max-min'和'standard'两种方式可选）
+few_shot_mode：True/False，是否使用few-shot模式挑选scale
+few_shot_length：few-shot数据集的数据长度（不小于5）
+few_shot_path：few-shot数据集的存放地址
+save_find_fig：True/False，是否保存搜索scale时和R^2的关系图
+base_scope：搜索最佳scale时范围的上/下界（绝对值）
 ```
 
 
 
-###
