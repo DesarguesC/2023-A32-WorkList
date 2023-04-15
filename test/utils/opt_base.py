@@ -32,9 +32,9 @@ def get_base_argument_parser() -> argparse.ArgumentParser:
     )
 
     parser.add_argument(
-        '--pth_path',
+        '--pt_path',
         type=str,
-        default='./data/weights/3.1scale.pth',
+        default='./data/weights/3.1scale.pt',
         help='the path of your model weights'
     )
     
@@ -84,7 +84,7 @@ def get_base_argument_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         '--base_scope',
         type=float,
-        default=15.,
+        default=200.,
         help='use the scope when find the best dfg-scale'
     )
 

@@ -8,6 +8,7 @@ from utils.valid import find_best_scale as find
 
 
 
+
 def main():
     opt = get_parser()
     model = load_model(opt)
@@ -33,5 +34,9 @@ def main():
     valid_R, use_scale = test_model(model, Test_Data_Iter)
     print('With using district-free scale, we found following R-squared during validatioin.')
     print(valid_R)
+
+
     
+if __name__ == "__main__":
+    main()
 

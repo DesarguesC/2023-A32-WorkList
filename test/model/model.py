@@ -108,8 +108,8 @@ class NET(nn.Module):
 
 
 def load_model_NET(opt):
-    path = opt.pth_path
-    print('loading model pth from: ', path)
+    path = opt.pt_path
+    print('loading model weights from: ', path)
     net = NET(seq=5, batch_size=1, ablation_scale=opt.dfg_scale)
     net.load_state_dict(torch.load(path))
     net = net.cuda() if torch.cuda.is_available() else net

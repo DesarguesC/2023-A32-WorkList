@@ -40,7 +40,7 @@ def find_best_scale(model: Module, opt, data_iter):
         r_plt = []
         scale = .0
         scale_plt= []
-        for scale in np.arange(-opt.base_scope, opt.base_scope, .5):
+        for scale in np.arange(-opt.base_scope, opt.base_scope, .1):
             with torch.no_grad():
                 for i, use in enumerate(data_iter):
                     pred = model(use[0].cuda() if torch.cuda.is_available() else use[0])
