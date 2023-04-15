@@ -111,7 +111,10 @@ def load_model_NET(opt):
     path = opt.pt_path
     print('loading model weights from: ', path)
     net = NET(seq=5, batch_size=1, ablation_scale=opt.dfg_scale)
-    net.load_state_dict(torch.load(path))
+    if torch.cuda.is_available():
+        net.load_state_dict(torch.load(path))
+    else:
+        net.load_state_dict(torch.load(path), map_location=torch.device('cpu'))
     net = net.cuda() if torch.cuda.is_available() else net
     net.eval()
     return net
