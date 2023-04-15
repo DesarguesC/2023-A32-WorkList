@@ -6,4 +6,4 @@
 *.zip
 *png
 /demo-1/result/*
-*/__pycache__/*
+__pycache__
