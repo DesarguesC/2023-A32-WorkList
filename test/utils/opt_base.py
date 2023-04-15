@@ -73,7 +73,21 @@ def get_base_argument_parser() -> argparse.ArgumentParser:
         default='./data/few_shot_sample.xlsx',
         help='the path that the few-shot sequence data is placed'
     )
-    
+
+    parser.add_argument(
+        '--save_find_fig',
+        type=str2bool,
+        default=True,
+        help='whether to save figure when searching the best scale'
+    )
+
+    parser.add_argument(
+        '--base_scope',
+        type=float,
+        default=15.,
+        help='use the scope when find the best dfg-scale'
+    )
+
     opt = parser.parse_args()
     return opt
 

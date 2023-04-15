@@ -41,20 +41,19 @@ def GetDataset(opt, few_shot=False):
     # print(name[sp[0]-1], name[sp[0]])
     # print('debug: sp = ', sp)
 
+    station_minus_list = []
     station_list = []
+    
     standard_data = df2arr(read_data.iloc[sp[-2]+1:sp[-1]+1,1:6])
 
     for i in range(len(sp)-2):
-        station_list.append({
-            'station'+str(i+1): \
-                df2arr(read_data.iloc[sp[i]+1:sp[i+1]+1, 1:6]) - standard_data
-        })
+        station_data = df2arr(read_data.iloc[sp[i]+1:sp[i+1]+1, 1:6])
+        station_minus_list.append(station_data - standard_data)
+        station_list.append(station_data)
 
-    station_list.append({
-        'standard': standard_data
-    })
+    # station_minus_list.append(standard_data)
 
-    assert len(station_list)-1==opt.mini_station_num, 'invalid: len(station_list) = ' + str(len(station_list))
+    assert len(station_minus_list)==opt.mini_station_num, 'invalid: len(station_list) = ' + str(len(station_list))
 
     # print(station_list)
 
@@ -62,18 +61,19 @@ def GetDataset(opt, few_shot=False):
     Min_list = []
     Norm_Station_List = []
 
-    for i in range(len(station_list)-1):
+    for i in range(len(station_minus_list)-1):
         temp_name = 'station' + str(i+1)
-        M, m, s = ArrNorm(station_list[i][temp_name], opt.norm)
-        Max_list.append({
-            temp_name: M
-        })
-        Min_list.append({
-            temp_name: m
-        })
-        Norm_Station_List.append({
-            temp_name: s
-        })
+        M, m, s = ArrNorm(station_minus_list[i][temp_name], opt.norm)
+        Max_list.append(M)
+        Min_list.append(m)
+        Norm_Station_List.append(s)
     
     print('Data loading status: Finished.')
-    return Max_list, Min_list, Norm_Station_List
+
+    assert isinstance(Max_list, list)
+    assert isinstance(Min_list, list)
+    assert isinstance(station_minus_list, list)
+    assert isinstance(Norm_Station_List, list)
+
+    return Max_list, Min_list, \
+        torch.tensor(station_minus_list, dtype=torch.float32), torch.tensor(Norm_Station_List, dtype=torch.float32)
