@@ -4,12 +4,12 @@
 
 
 
-## district-free scale based few-shot time serie fitting method
+## district-free guidance scale based few-shot time serie fitting method
 English version
 
 **Introduction**
 
-![model](./data/assets/model.png)
+![model](/data/assets/model.png)
 Using LSTM and convolutional neural network, as well as renet, we solve the data correcting problem with finally $R^2\ge0.98$.
 
 We propose an improvement of the using of the ResNet with an extra scale called *district-free guidance scale*, which can be simply denoted as *dfg-scale*. With this dfg-scale, our model gain the migration ability from district to district.
@@ -31,7 +31,49 @@ conda env create -f environment.yaml
 ```
 in order to use our project.
 
-### 
+### Run our program
+
+As you clone the program, turn to folder 'test' and activate your virtual environment(if you have launched a new virtual environment for our program)
+```bat
+cd test
+```
+running our main code
+```bat
+python test.py
+```
+
+By default, this use district-free guidance scale = 1.0 on the default dataset path './data/A32.xlsx'. All supported arguments are listed below (type python test.py --help).
+```bat
+usage: test.py [-h] [--mini_station_num MINI_STATION_NUM] [--data_path DATA_PATH] [--pt_path PT_PATH] [--dfg_scale DFG_SCALE]
+               [--norm {standard,max-min}] [--few_shot_mode FEW_SHOT_MODE] [--few_shot_length FEW_SHOT_LENGTH]
+               [--few_shot_path FEW_SHOT_PATH] [--save_find_fig SAVE_FIND_FIG] [--base_scope BASE_SCOPE]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --mini_station_num MINI_STATION_NUM
+                        how many tiny stations are on the dataset
+  --data_path DATA_PATH
+                        the path of your dataset
+  --pt_path PT_PATH     the path of your model weights
+  --dfg_scale DFG_SCALE
+                        district-free guidance scale as we dedcribed
+  --norm {standard,max-min}
+                        how to normalize the input data
+  --few_shot_mode FEW_SHOT_MODE
+                        to use zero shot mode
+  --few_shot_length FEW_SHOT_LENGTH
+                        the length of dataset and must be greater than 5
+  --few_shot_path FEW_SHOT_PATH
+                        the path that the few-shot sequence data is placed
+  --save_find_fig SAVE_FIND_FIG
+                        whether to save figure when searching the best scale
+  --base_scope BASE_SCOPE
+                        use the scope when find the best dfg-scale
+```
+
+NOTE: When you are running with a few-shot dataset input, remember to set --few_shot_mode=True, or the model fails to read your few-shot dataset.
+
+
 
 
 
@@ -61,6 +103,12 @@ conda env create -f environment.yaml
 ```
 才能使用我们的项目
 
+### 项目运行
+
+在终端中打开我们的项目文件夹，切换进入test文件夹
+```bat
+cd test
+```
 
 
 
