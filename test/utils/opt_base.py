@@ -32,10 +32,24 @@ def get_base_argument_parser() -> argparse.ArgumentParser:
     )
 
     parser.add_argument(
-        '--pt_path',
+        '--pt_path_base',
         type=str,
-        default='test/data/weights/3.1scale.pt',
+        default='test/data/weights/group',
         help='the path of your model weights'
+    )
+
+    parser.add_argument(
+        '--group_num',
+        type=int,
+        default=1,
+        help='use which group of weights for correction'
+    )
+
+    parser.add_argument(
+        '--single_scale',
+        type=str2bool,
+        default=False,
+        help='use same scale for all features'
     )
     
     parser.add_argument(

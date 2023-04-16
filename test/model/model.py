@@ -1,5 +1,6 @@
 import torch
 from torch import nn
+import pandas as pd
 
 
 
@@ -89,7 +90,17 @@ class NET(nn.Module):
             nn.Conv2d(2, 1, kernel_size=(3,3), padding=1, bias=True), # seq * 5
             nn.ReLU(inplace=True),
         )
-    
+
+    def set_base_model(self, base_path):
+        base_path = base_path if base_path.endswith('/') else base_path + '/'
+        file = pd.read(base_path + 'scale.csv')
+        self.scale_list = list(file['scale'])
+        import os
+        pt_file = os.listdir(base_path)
+        for i in range(5):
+            setattr(self, 'pt'+str(i+1), pt_file[i])
+        
+
     def reset(self, scale=1.0):
         self.ablatiion_scale = scale
 
@@ -109,9 +120,11 @@ class NET(nn.Module):
 
 
 def load_model_NET(opt):
-    path = opt.pt_path
+    opt.pt_path = opt.pt_path if opt.pt_path.endswith('/') else opt.pt_path + '/'
+    path = opt.pt_path + opt.group_num
     print('loading model weights from: ', path)
     net = NET(seq=5, batch_size=1, ablation_scale=opt.dfg_scale)
+    net.set_base_model(opt.pt_path_base)
     print('torch.device: ' + 'cuda:0' if torch.cuda.is_available() else 'cpu')
     net.load_state_dict(torch.load(path, map_location=\
                         torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')))
