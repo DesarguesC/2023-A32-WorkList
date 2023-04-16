@@ -3,17 +3,23 @@ import numpy as np
 from scipy import stats
 import torch
 from torch.nn import Module
+from tqdm import tqdm
 
+
+# def rsquared(x, y): 
+#     length = x.shape[-1]
+#     assert x.shape==y.shape, "Unequal Shape Error"
+#     r, x, y = [], x.detach(), y.detach()
+#     x, y = x.mean(dim=[0], keepdim=False), y.mean(dim=[0], keepdim=False)
+#     print('x.shape = ', x.shape)
+#     for i in range(length):
+#         _, _, r_value, _, _ = stats.linregress(x[i].detach().numpy().tolist(), y.detach().numpy()) 
+#         r.append(r_value ** 2)
+#     return r
 
 def rsquared(x, y): 
-    length = x.shape[-1]
-    assert x.shape==y.shape, "Unequal Shape Error"
-    r, x, y = [], x.detach(), y.detach()
-    x, y = x.mean(dim=[0,1], keepdim=False), y.mean(dim=[0,1], keepdim=False)
-    for i in range(length):
-        _, _, r_value, _, _ = stats.linregress(x[:,i].detach().numpy(), y[:,i].detach().numpy()) 
-        r.append(r_value ** 2)
-    return r
+    _, _, r_value, _, _ = stats.linregress(x.detach().cpu().numpy(), y.detach().cpu().numpy()) 
+    return r_value**2
 
 
 def find_best_scale(model: Module, opt, data_iter):
@@ -44,12 +50,13 @@ def find_best_scale(model: Module, opt, data_iter):
         for scale in np.arange(-opt.base_scope, opt.base_scope, .1):
             with torch.no_grad():
                 for i, use in enumerate(data_iter):
+                    
                     pred = model(use[0].cuda() if torch.cuda.is_available() else use[0])
                     try:
-                        pred = pred.reshape(-1, 5)
+                        pred = pred.reshape(-1, 1, 5)
                     except:
                         raise RuntimeError('Invalid sequence length or batch size')
-                    use[1] = use[1].reshape(-1, 5)
+                    use[1] = use[1].reshape(-1, 1, 5)
                     assert pred.shape == use[1].shape, 'unequal shape error'
                     r1 = rsquared(pred[idx], use[1][idx])
             r_plt.append(r)
@@ -83,17 +90,21 @@ def find_best_scale(model: Module, opt, data_iter):
 
 def test_model(model, data_iter):
     R_list = []
-    for idx in range(5):
-        for i, use in enumerate(data_iter):
-            assert i==0, 'batch size of data iterator wrong set!'
-            pred = model(use[0].cuda() if torch.cuda.is_available() else use[0])
-            try:
-                pred = pred.reshape(-1, 5)
-                use[1] = use[1].reshape(-1, 5)
-            except:
-                raise RuntimeError('Feature amount of the input must be 5')
-
-            assert pred.shape == use[1].shape, 'unequal shape error'
+    for i, use in enumerate(tqdm(data_iter)):
+        # print('\nuse[0].shape = {0}, use[1].shape = {1}'.format(use[0].shape, use[1].shape))
+        assert i==0, 'batch size of data iterator wrong set!'
+        pred = model(use[0].cuda() if torch.cuda.is_available() else use[0])
+        try:
+            pred = pred.reshape(-1, 5)
+            use[1] = use[1].reshape(-1, 5)
+        except:
+            raise RuntimeError('Feature amount of the input must be 5')
+        assert pred.shape == use[1].shape, 'unequal shape error'
+        print(pred.shape)
+        for idx in range(5):
+            # print('\npred[{0}].shape = {1}, use[1][{2}].shape = {3}'.\
+            #   format(idx, pred[idx].shape, idx, use[1][idx].shape))
             R = rsquared(pred[idx], use[1][idx])
-        R_list.append(R)
+            R_list.append(R)
+        assert len(R_list) == 5, 'Err'
     return R_list, model.scale

@@ -34,7 +34,7 @@ def get_base_argument_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         '--pt_path',
         type=str,
-        default='./data/weights/3.1scale.pt',
+        default='test/data/weights/3.1scale.pt',
         help='the path of your model weights'
     )
     

@@ -65,10 +65,11 @@ class NET(nn.Module):
         
         self.is_directional = False
         self.num_direction = 2 if self.is_directional else 1
-        self.num_layers = 1
-        
+        self.num_layers = 1        
         self.lstm = nn.LSTM(self.input_size, self.hidden_size, self.num_layers, dropout=0.5, bidirectional=self.is_directional, batch_first=False)
         
+        self.device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
+
         self.decouple = nn.Sequential(
             nn.Linear(self.seq*5,self.seq*5),  # linear decouple
             nn.Dropout(0.5),
@@ -95,8 +96,8 @@ class NET(nn.Module):
     def forward(self, x):
         x = x.squeeze()
         
-        h_0 = torch.randn(self.num_direction*self.num_layers, self.seq, self.hidden_size).cuda()
-        c_0 = torch.randn(self.num_direction*self.num_layers, self.seq, self.hidden_size).cuda()
+        h_0 = torch.randn(self.num_direction*self.num_layers, self.seq, self.hidden_size).to(self.device)
+        c_0 = torch.randn(self.num_direction*self.num_layers, self.seq, self.hidden_size).to(self.device)
         pred, *_ = self.lstm(x, (h_0, c_0))
         pred = pred.flatten(1)
         out1 = self.decouple(pred)
@@ -111,10 +112,9 @@ def load_model_NET(opt):
     path = opt.pt_path
     print('loading model weights from: ', path)
     net = NET(seq=5, batch_size=1, ablation_scale=opt.dfg_scale)
-    if torch.cuda.is_available():
-        net.load_state_dict(torch.load(path))
-    else:
-        net.load_state_dict(torch.load(path), map_location=torch.device('cpu'))
+    print('torch.device: ' + 'cuda:0' if torch.cuda.is_available() else 'cpu')
+    net.load_state_dict(torch.load(path, map_location=\
+                        torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')))
     net = net.cuda() if torch.cuda.is_available() else net
     net.eval()
     return net

@@ -9,12 +9,14 @@ from utils.valid import find_best_scale as find
 
 
 
+
 def main():
     opt = get_parser()
     model = load_model(opt)
-    M_list, Min_list, Station_Data, Norm_Station_List = GetDataset(opt)
-    L = len(Station_Data)
-    Test_Data_Iter = load_array((Station_Data, Norm_Station_List[0:L-1]), batch_size=1)
+    M_list, Min_list, I_O_Menu, Standard_Data = GetDataset(opt)
+    
+    Test_Data_Iter_List = [load_array(I_O_Menu[i], batch_size=len(I_O_Menu[i][0])) for i in range(len(I_O_Menu))]
+    print(I_O_Menu[0][0].shape)
     # Station_Data: input
     # Norm_Station_List: output
     if not opt.few_shot_mode:
@@ -30,10 +32,12 @@ def main():
         scale = scale_list[R_list.index(R_max)]
         print('Using model with scale = {0} found on few-shot data'.format(scale))
         model.reset(scale)
-        
-    valid_R, use_scale = test_model(model, Test_Data_Iter)
-    print('With using district-free scale, we found following R-squared during validatioin.')
-    print(valid_R)
+    
+    print('Start Validation....')
+    for i in range(len(Test_Data_Iter_List)):
+        valid_R, use_scale = test_model(model, Test_Data_Iter_List[i])
+        print('With using district-free scale = %.5f, we found R-squared in DISTRICT %d'%(use_scale, i+1))
+        print(valid_R)
 
 
     
