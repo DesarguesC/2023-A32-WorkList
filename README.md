@@ -7,6 +7,8 @@
 ## district-free guidance scale based few-shot time serie fitting method
 English version
 
+visit our full program at https://github.com/DesarguesC/2023-A32-WorkList
+
 **Introduction**
 
 ![model](/data/assets/model.png)
@@ -80,6 +82,8 @@ NOTE: When you are running with a few-shot dataset input, remember to set --few_
 
 ## 基于免地域指引比例的小时域数据适应方法
 中文版
+
+在https://github.com/DesarguesC/2023-A32-WorkList上访问我们完整的项目
 
 ### 简介
 
