@@ -4,6 +4,7 @@ from scipy import stats
 import torch
 from torch.nn import Module
 from tqdm import tqdm
+from model.model import NET
 
 
 # def rsquared(x, y): 
@@ -50,7 +51,6 @@ def find_best_scale(model: Module, opt, data_iter):
         for scale in np.arange(-opt.base_scope, opt.base_scope, .1):
             with torch.no_grad():
                 for i, use in enumerate(data_iter):
-                    
                     pred = model(use[0].cuda() if torch.cuda.is_available() else use[0])
                     try:
                         pred = pred.reshape(-1, 1, 5)
@@ -88,23 +88,24 @@ def find_best_scale(model: Module, opt, data_iter):
     print(R_list, scale_list)
     return R_list, scale_list
 
-def test_model(model, data_iter):
+def test_model(model_list: list, data_iter):
     R_list = []
-    for i, use in enumerate(tqdm(data_iter)):
-        # print('\nuse[0].shape = {0}, use[1].shape = {1}'.format(use[0].shape, use[1].shape))
-        assert i==0, 'batch size of data iterator wrong set!'
-        pred = model(use[0].cuda() if torch.cuda.is_available() else use[0])
-        try:
-            pred = pred.reshape(-1, 5)
-            use[1] = use[1].reshape(-1, 5)
-        except:
-            raise RuntimeError('Feature amount of the input must be 5')
-        assert pred.shape == use[1].shape, 'unequal shape error'
-        print(pred.shape)
-        for idx in range(5):
-            # print('\npred[{0}].shape = {1}, use[1][{2}].shape = {3}'.\
-            #   format(idx, pred[idx].shape, idx, use[1][idx].shape))
+    assert len(model_list) == 5, 'model_list length Error'
+    for idx in range(len(model_list)):
+        model = model_list[idx]
+        for i, use in enumerate(tqdm(data_iter)):
+            # print('\nuse[0].shape = {0}, use[1].shape = {1}'.format(use[0].shape, use[1].shape))
+            assert i==0, 'batch size of data iterator wrong set!'
+            assert isinstance(model, NET), 'Class not match Error'
+            pred = model(use[0].cuda() if torch.cuda.is_available() else use[0])
+            try:
+                pred = pred.reshape(-1, 5)
+                use[1] = use[1].reshape(-1, 5)
+            except:
+                raise RuntimeError('Feature amount of the input must be 5')
+            assert pred.shape == use[1].shape, 'unequal shape error'
+            # print(pred.shape)
             R = rsquared(pred[idx], use[1][idx])
             R_list.append(R)
-        assert len(R_list) == 5, 'Err'
+    assert len(R_list) == 5, 'Err'
     return R_list, model.scale

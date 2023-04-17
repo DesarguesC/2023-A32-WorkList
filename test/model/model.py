@@ -89,17 +89,7 @@ class NET(nn.Module):
             
             nn.Conv2d(2, 1, kernel_size=(3,3), padding=1, bias=True), # seq * 5
             nn.ReLU(inplace=True),
-        )
-
-    def set_base_model(self, base_path):
-        base_path = base_path if base_path.endswith('/') else base_path + '/'
-        file = pd.read(base_path + 'scale.csv')
-        self.scale_list = list(file['scale'])
-        import os
-        pt_file = os.listdir(base_path)
-        for i in range(5):
-            setattr(self, 'pt'+str(i+1), pt_file[i])
-        
+        )     
 
     def reset(self, scale=1.0):
         self.ablatiion_scale = scale
@@ -118,16 +108,38 @@ class NET(nn.Module):
         assert out1.shape==out2.shape, "Shape Unequal Error."
         return self.scale * out1 + out2
 
+def get_list(opt_path):
+    # assert opt_path.endswith('group') or opt_path.endswith('group/')
+    assert opt_path.endswith('/')
+    file = pd.read_csv(opt_path + 'scale.csv')
+    scale_list = list(file['scale'])
+    import os
+    pt_file = os.listdir(opt_path)
+    pt_list = []
+    for pt in pt_file:
+        if pt.endswith('.pt'):
+            pt_list.append(opt_path + pt)
+        else:
+            pass
+    return scale_list, pt_list
+
+
 
 def load_model_NET(opt):
-    opt.pt_path = opt.pt_path if opt.pt_path.endswith('/') else opt.pt_path + '/'
-    path = opt.pt_path + opt.group_num
+    opt.pt_path_base = opt.pt_path_base if opt.pt_path_base.endswith('/') \
+        else opt.pt_path_base + '/'
+    path = opt.pt_path_base + str(opt.group_num) + '/'
     print('loading model weights from: ', path)
-    net = NET(seq=5, batch_size=1, ablation_scale=opt.dfg_scale)
-    net.set_base_model(opt.pt_path_base)
-    print('torch.device: ' + 'cuda:0' if torch.cuda.is_available() else 'cpu')
-    net.load_state_dict(torch.load(path, map_location=\
+    model_list = []
+    scale_list, pt_list = get_list(path)
+    for i in range(5):
+        net = NET(seq=5, batch_size=1, ablation_scale=opt.dfg_scale)
+        net.reset(scale_list[i])
+        # print('torch.device: ' + 'cuda:0' if torch.cuda.is_available() else 'cpu')
+        net.load_state_dict(torch.load(pt_list[i], map_location=\
                         torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')))
-    net = net.cuda() if torch.cuda.is_available() else net
-    net.eval()
-    return net
+        net = net.cuda() if torch.cuda.is_available() else net
+        net.eval()
+        model_list.append(net)
+    assert len(model_list) == 5, 'model list length unmatch Error'
+    return model_list
