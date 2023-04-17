@@ -71,7 +71,7 @@ def get_base_argument_parser() -> argparse.ArgumentParser:
         '--few_shot_mode',
         type=str2bool,
         default=False,
-        help='to use zero shot mode'
+        help='to use few shot mode'
     )
 
     parser.add_argument(
