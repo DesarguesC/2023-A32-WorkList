@@ -41,8 +41,8 @@ def main():
     
     print('Start Validation....')
     for i in range(len(Test_Data_Iter_List)):
-        valid_R, use_scale = test_model(model_list, Test_Data_Iter_List[i])
-        print('With using district-free scale = %.5f, we found R-squared in DISTRICT %d'%(use_scale, i+1))
+        valid_R, scale_list = test_model(model_list, Test_Data_Iter_List[i])
+        print('R-squared in DISTRICT %d'%(i+1))
         print(valid_R)
 
 

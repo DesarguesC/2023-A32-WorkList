@@ -5,9 +5,9 @@ import torch
 
 SEQUENCE = 5
 
-def load_array(data_arrays, batch_size, is_train=True):
+def load_array(data_arrays, batch_size):
     dataset = torch.utils.data.TensorDataset(*data_arrays)
-    return torch.utils.data.DataLoader(dataset, batch_size, shuffle=is_train)
+    return torch.utils.data.DataLoader(dataset, batch_size, shuffle=False)
 
 def create(data_arr, length=SEQUENCE, TYPE=torch.float32) -> torch.Tensor:
     # length: sequence length
