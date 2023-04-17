@@ -1,7 +1,6 @@
 /data/private data/*/
 *.pdf
-*.pth
-*.pt
+
 *.zip
 /demo-1/result/*
 __pycache__/
